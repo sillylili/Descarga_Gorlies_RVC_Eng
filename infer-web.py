@@ -1037,21 +1037,21 @@ def export_onnx(ModelPath, ExportedPath, MoeVS=True):
 with gr.Blocks() as app:
     gr.Markdown(
         value=i18n(
-            "本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责. <br>如不认可该条款, 则不能使用或引用软件包内任何代码和文件. 详见根目录<b>使用需遵守的协议-LICENSE.txt</b>."
+            "This software is released under the MIT License and is open-sourced. <br>The author does not hold any control over the software, and as a result, users who use the software and those who spread sound exported from the software are solely responsible for their actions. If you do not agree to these terms, you may not use or reference any code or file within the software package. <br><b>Please refer to the License Agreement in the root directory - LICENSE.txt.</b>."
         )
     )
     with gr.Tabs():
-        with gr.TabItem(i18n("模型推理")):
+        with gr.TabItem(i18n("Model Inference")):
             with gr.Row():
-                sid0 = gr.Dropdown(label=i18n("推理音色"), choices=sorted(names))
-                refresh_button = gr.Button(i18n("刷新音色列表"), variant="primary")
+                sid0 = gr.Dropdown(label=i18n("Singer"), choices=sorted(names))
+                refresh_button = gr.Button(i18n("Refresh singer list"), variant="primary")
                 refresh_button.click(fn=change_choices, inputs=[], outputs=[sid0])
-                clean_button = gr.Button(i18n("卸载音色省显存"), variant="primary")
+                clean_button = gr.Button(i18n("Unload singer from CUDA"), variant="primary")
                 spk_item = gr.Slider(
                     minimum=0,
                     maximum=2333,
                     step=1,
-                    label=i18n("请选择说话人id"),
+                    label=i18n("Select a singer."),
                     value=0,
                     visible=False,
                     interactive=True,
@@ -1064,27 +1064,27 @@ with gr.Blocks() as app:
                 )
             with gr.Group():
                 gr.Markdown(
-                    value=i18n("男转女推荐+12key, 女转男推荐-12key, 如果音域爆炸导致音色失真也可以自己调整到合适音域. ")
+                    value=i18n("Pitch shift. Please use accordingly to the range of the singer.")
                 )
                 with gr.Row():
                     with gr.Column():
                         vc_transform0 = gr.Number(
-                            label=i18n("变调(整数, 半音数量, 升八度12降八度-12)"), value=0
+                            label=i18n("Pitch shift (semitone; -/+ 12)"), value=0
                         )
                         input_audio0 = gr.Textbox(
-                            label=i18n("输入待处理音频文件路径(默认是正确格式示例)"),
-                            value="E:\\codes\\py39\\vits_vc_gpu_train\\todo-songs\\冬之花clip1.wav",
+                            label=i18n("Singer model path:"),
+                            value="/content/dataset/",
                         )
                         f0method0 = gr.Radio(
-                            label=i18n("选择音高提取算法,输入歌声可用pm提速,harvest低音好但巨慢无比"),
+                            label=i18n("Select the F0 harvester. (PM is faster. HARVEST is better with lower vocals.)"),
                             choices=["pm", "harvest"],
                             value="pm",
                             interactive=True,
                         )
                     with gr.Column():
                         file_index1 = gr.Textbox(
-                            label=i18n("特征检索库文件路径"),
-                            value="E:\\codes\\py39\\vits_vc_gpu_train\\logs\\mi-test-1key\\added_IVF677_Flat_nprobe_7.index",
+                            label=i18n("Added .index file."),
+                            value="/content/Retrieval-based-Voice-Conversion-WebUI/logs/your_singer/added_IVF10622_Flat_nprobe_1.index",
                             interactive=True,
                         )
                         # file_big_npy1 = gr.Textbox(
@@ -1095,15 +1095,15 @@ with gr.Blocks() as app:
                         index_rate1 = gr.Slider(
                             minimum=0,
                             maximum=1,
-                            label=i18n("检索特征占比"),
+                            label=i18n("Ratio of recreation (similar to gt_mel)"),
                             value=0.76,
                             interactive=True,
                         )
-                    f0_file = gr.File(label=i18n("F0曲线文件, 可选, 一行一个音高, 代替默认F0及升降调"))
-                    but0 = gr.Button(i18n("转换"), variant="primary")
+                    f0_file = gr.File(label=i18n("F0 curve file. Most likely a MIDI."))
+                    but0 = gr.Button(i18n("Synthesize"), variant="primary")
                     with gr.Column():
-                        vc_output1 = gr.Textbox(label=i18n("输出信息"))
-                        vc_output2 = gr.Audio(label=i18n("输出音频(右下角三个点,点了可以下载)"))
+                        vc_output1 = gr.Textbox(label=i18n("Console (Always check colab!)"))
+                        vc_output2 = gr.Audio(label=i18n("Rendered audio: (downloads vary by browser)"))
                     but0.click(
                         vc_single,
                         [
@@ -1120,24 +1120,24 @@ with gr.Blocks() as app:
                     )
             with gr.Group():
                 gr.Markdown(
-                    value=i18n("批量转换, 输入待转换音频文件夹, 或上传多个音频文件, 在指定文件夹(默认opt)下输出转换的音频. ")
+                    value=i18n("Batch inference. Pleas set the path to a folder containing the .WAVs or upload them here.")
                 )
                 with gr.Row():
                     with gr.Column():
                         vc_transform1 = gr.Number(
-                            label=i18n("变调(整数, 半音数量, 升八度12降八度-12)"), value=0
+                            label=i18n("Pitch shift (semitone; -/+ 12)"), value=0
                         )
-                        opt_input = gr.Textbox(label=i18n("指定输出文件夹"), value="opt")
+                        opt_input = gr.Textbox(label=i18n("Set output folder:"), value="opt")
                         f0method1 = gr.Radio(
-                            label=i18n("选择音高提取算法,输入歌声可用pm提速,harvest低音好但巨慢无比"),
+                            label=i18n("Select the F0 harvester. (PM is faster. HARVEST is better with lower vocals.)"),
                             choices=["pm", "harvest"],
                             value="pm",
                             interactive=True,
                         )
                     with gr.Column():
                         file_index2 = gr.Textbox(
-                            label=i18n("特征检索库文件路径"),
-                            value="E:\\codes\\py39\\vits_vc_gpu_train\\logs\\mi-test-1key\\added_IVF677_Flat_nprobe_7.index",
+                            label=i18n("Added .index file."),
+                            value="/content/Retrieval-based-Voice-Conversion-WebUI/logs/your_singer/added_IVF10622_Flat_nprobe_1.index",
                             interactive=True,
                         )
                         # file_big_npy2 = gr.Textbox(
@@ -1148,20 +1148,20 @@ with gr.Blocks() as app:
                         index_rate2 = gr.Slider(
                             minimum=0,
                             maximum=1,
-                            label=i18n("检索特征占比"),
+                            label=i18n("Ratio of recreation (similar to gt_mel)"),
                             value=1,
                             interactive=True,
                         )
                     with gr.Column():
                         dir_input = gr.Textbox(
-                            label=i18n("输入待处理音频文件夹路径(去文件管理器地址栏拷就行了)"),
-                            value="E:\codes\py39\\vits_vc_gpu_train\\todo-songs",
+                            label=i18n("Path to .WAVs to be processed:"),
+                            value="/content/songs/",
                         )
                         inputs = gr.File(
-                            file_count="multiple", label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹")
+                            file_count="multiple", label=i18n("Drag and drop files here")
                         )
-                    but1 = gr.Button(i18n("转换"), variant="primary")
-                    vc_output3 = gr.Textbox(label=i18n("输出信息"))
+                    but1 = gr.Button(i18n("Synthesize"), variant="primary")
+                    vc_output3 = gr.Textbox(label=i18n("Console"))
                     but1.click(
                         vc_multi,
                         [
